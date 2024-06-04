@@ -1,4 +1,4 @@
-I/CD with GitHub Actions: Step-by-Step Guide
+# CI/CD with GitHub Actions: Step-by-Step Guide
 
 ## Introduction
 
