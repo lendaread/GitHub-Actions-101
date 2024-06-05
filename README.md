@@ -135,4 +135,120 @@ jobs:
 > We strongly recommend to read [Workflow syntax for GitHub Actions](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions), to find more about the basics on name, triggers, jobs and steps
 
 
+### Checkout code
 
+# Example of GitHub Workflows
+
+## Running unit tests
+
+One of the most common usages is to run unit tests on pushes to main or Pull Request, so that they run automatically.
+
+In order to show a basic example, this repository contains a basic JavaScript Project whit test that are intended to run with Jest. However, this can be done with other languges, frameworks, etc. (Java with maven, React, etc). The only requiremnet is that the unit tests can be runned using a command-line.
+
+### Unit tests workflow file
+
+Create the `unit_tests.yml` file inside the `.github/workflows` folder. For this example, we want the workflow to only run when a pull request is created, updated, or reopened and only when the pull requests wants to be merged to main.
+
+```yaml
+name: Run Unit Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+```
+
+Then, a single job will be created, where we will install the dependencies and run the tests, as we would do on our local machine. In this case is javascript running `npm`, but it could be java using maven and many more other options.
+
+```yaml
+  jobs:
+    test:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '16'
+
+        - name: Install dependencies
+          run: npm install
+
+        - name: Run tests
+          run: npm test
+
+  ```
+  In this case, there are four steps:
+  - Doing the repository checkout (That we have explained before)
+  - Use the action `setup-node@v3` in order to set up the version of Node we need. This could be changed for another action intended for configuring the versions of Java, Python, etc.
+  - 'Install dependencies' and 'Run tests' That just runs the commands indicated with the key `run`.
+
+## Send notifications
+
+It can be very useful to send notifications to the team upon successful or failed workflows. Notifications can be send to diverse services such as Slack, Discord, Microsoft Teams or just email.
+
+### Slack notifications
+
+In case your team uses Slack, you will need to create a App and create an incoming webhook for it. Here's a step by step guide at the [Slack api Documentation](https://api.slack.com/messaging/webhooks).
+
+Here's the step you need to add to send a notification via slack to a specific channel.
+
+```yaml
+  steps:
+    
+    ...
+
+    - name: Send custom JSON data to Slack workflow
+      id: slack
+      uses: slackapi/slack-github-action@v1.26.0
+      with:
+        payload: |
+          {
+            "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+```
+
+>
+> It is strongly recommneded to store the Slack Webhook as a repository secret. See the [GitHub documentation about secrets](https://docs.github.com/es/actions/security-guides/using-secrets-in-github-actions).
+>
+
+### Email notifications
+
+The action shown to send emails is based on the SMTP protocol. This implies that you will need to configure the secrets for the following fields:
+- SMTP Server: ...
+- SMTP Port: ...
+- SMTP username: ...
+- SMTP password: ...
+
+```yaml
+    - name: Send Email Notification
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: ${{ secrets.SMTP_SERVER }}
+        server_port: ${{ secrets.SMTP_PORT }}
+        username: ${{ secrets.SMTP_USERNAME }}
+        password: ${{ secrets.SMTP_PASSWORD }}
+        subject: GitHub Actions Notification
+        body: A new push to the main branch has been made.
+        to: devops@example.com, devs@example.com, cto@example.com
+        from: ${{ secrets.SMTP_USERNAME }}
+```
+
+>
+> How you obtain these fields depends on the email service that is used.
+>
