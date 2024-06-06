@@ -123,7 +123,7 @@ jobs:
   terraform-init:
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -287,3 +287,4 @@ In the repositry settings, you will find the section `environments` where you ca
 You can specify people or teams that may approve workflow runs when they access this environment. This are inside the section `Deployment protection rules`.
 
 ![Reviewers](images/protec.png)
+
