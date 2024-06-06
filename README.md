@@ -288,3 +288,5 @@ You can specify people or teams that may approve workflow runs when they access 
 
 ![Reviewers](images/protec.png)
 
+# Complete demo
+A full demonstration of all the features and concepts shown here is available at [lendaread/CI-CD](https://github.com/lendaread/CI-CD).
