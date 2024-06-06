@@ -137,9 +137,12 @@ jobs:
 
 ### Checkout code
 
+This action checks-out your repository so your workflow can access and work with it. It basically clones the repository for you.
 
-
-### Run commands
+```yaml
+      - name: Checkout repository
+        uses: actions/checkout@v4
+```
 
 # Example of GitHub Workflows
 
