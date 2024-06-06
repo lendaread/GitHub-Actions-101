@@ -137,6 +137,10 @@ jobs:
 
 ### Checkout code
 
+
+
+### Run commands
+
 # Example of GitHub Workflows
 
 ## Running unit tests
@@ -230,10 +234,8 @@ Here's the step you need to add to send a notification via slack to a specific c
 ### Email notifications
 
 The action shown to send emails is based on the SMTP protocol. This implies that you will need to configure the secrets for the following fields:
-- SMTP Server: ...
-- SMTP Port: ...
-- SMTP username: ...
-- SMTP password: ...
+- `SMTP Server` and `SMTP Port`: Server to use to send the email.
+- `SMTP username` and `SMTP password`: Credentials of the email to authenticate with the SMTP server.
 
 ```yaml
     - name: Send Email Notification
@@ -252,3 +254,36 @@ The action shown to send emails is based on the SMTP protocol. This implies that
 >
 > How you obtain these fields depends on the email service that is used.
 >
+
+>
+> In case you use a gmail accounte to send the email from, take into account that it might be required to set up an App Password instead of using the Google account password.
+>
+
+# Environments
+
+GitHub provides environments for a repository so that it can deploy in different contexts. This is achieved by configuring the same secrets with differente values in each environment.
+
+Furthermore it allows to have a select group of people that can approve a deployment before it starts.
+
+![Create a new environmet](images/newenv.png)
+
+Inside a job, the `environment` field sets up the job to run in the specified context.
+
+```yaml
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    environment: dev
+```
+
+## Distintos ambientes
+
+In the repositry settings, you will find the section `environments` where you can set up secrets that will apply only when the environment context is selected.
+
+![Configure Secrets for environment](images/secenv.png)
+
+## Aprobacion manual
+
+You can specify people or teams that may approve workflow runs when they access this environment. This are inside the section `Deployment protection rules`.
+
+![Reviewers](images/protec.png)
